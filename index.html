@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iran War Supply Shock — Trading Monitor</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --green: #3fb950;
+    --blue: #58a6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  .container { max-width: 800px; width: 100%; }
+  h1 { font-size: 28px; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+  .latest-banner {
+    background: rgba(88,166,255,0.08);
+    border: 1px solid var(--blue);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .latest-banner .label { color: var(--blue); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .latest-banner .date { font-size: 20px; font-weight: 700; }
+  .latest-banner a {
+    background: var(--blue);
+    color: var(--bg);
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: opacity 0.2s;
+  }
+  .latest-banner a:hover { opacity: 0.85; }
+  h2 { font-size: 16px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .report-list { list-style: none; }
+  .report-list li {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .report-list li:hover { border-color: var(--blue); }
+  .report-list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .report-list .report-date { font-weight: 600; }
+  .report-list .report-day { color: var(--muted); font-size: 13px; }
+  .report-list .arrow { color: var(--muted); font-size: 18px; }
+  .strategies {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 600px) { .strategies { grid-template-columns: 1fr 1fr; } }
+  .strat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+  .strat-card .strat-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .strat-card .strat-name { font-weight: 600; margin-top: 2px; }
+  .strat-card .strat-conv { margin-top: 4px; font-size: 11px; }
+  .conv-high { color: var(--green); }
+  .conv-med { color: var(--yellow); }
+  .conv-low { color: var(--muted); }
+  .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .footer a { color: var(--muted); }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .dot-active { background: var(--green); }
+  .dot-watch { background: var(--yellow); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>IRAN WAR SUPPLY SHOCK</h1>
+  <div class="subtitle">Asymmetric Trading Playbook — Daily Signal Monitor</div>
+
+  <div class="latest-banner">
+    <div>
+      <div class="label">Latest Report</div>
+      <div class="date" id="latest-date">March 15, 2026</div>
+    </div>
+    <a href="" id="latest-link">Open Report →</a>
+  </div>
+
+  <h2>Active Strategies</h2>
+  <div class="strategies">
+    <div class="strat-card">
+      <div class="strat-label">Strategy A</div>
+      <div class="strat-name">Fertilizer & Agriculture</div>
+      <div class="strat-conv conv-high">● Highest Conviction</div>
+    </div>
+    <div class="strat-card">
+      <div class="strat-label">Strategy B</div>
+      <div class="strat-name">Tanker & Shipping</div>
+      <div class="strat-conv conv-high">● High Conviction</div>
+    </div>
+    <div class="strat-card" style="border-color: var(--blue);">
+      <div class="strat-label">Strategy E — Active Long</div>
+      <div class="strat-name">Bitcoin</div>
+      <div class="strat-conv conv-high">● Position Open &lt;$70k</div>
+    </div>
+    <div class="strat-card">
+      <div class="strat-label">Strategy C — Watchlist</div>
+      <div class="strat-name">Gold Contrarian</div>
+      <div class="strat-conv conv-med">○ Waiting for DXY peak</div>
+    </div>
+    <div class="strat-card">
+      <div class="strat-label">Strategy D — Watchlist</div>
+      <div class="strat-name">Helium → Semicon</div>
+      <div class="strat-conv conv-med">○ Medium Conviction</div>
+    </div>
+    <div class="strat-card">
+      <div class="strat-label">Strategy F — Watchlist</div>
+      <div class="strat-name">Water & Gulf Flight</div>
+      <div class="strat-conv conv-low">○ Low Conviction</div>
+    </div>
+  </div>
+
+  <h2>Report Archive</h2>
+  <ul class="report-list" id="report-list">
+    <!-- Populated by JS -->
+  </ul>
+</div>
+
+<div class="footer">
+  Iran War Supply Shock — Asymmetric Trading Playbook<br>
+  Not financial advice. All trades carry risk.<br>
+  Auto-generated daily at 15:00 CET via <a href="https://claude.ai">Claude Cowork</a>
+</div>
+
+<script>
+// Report registry — new reports get prepended here by the auto-push script
+const reports = [
+  { date: "2026-03-15", file: "reports/2026-03-15.html", day: "Saturday" },
+];
+
+// Set latest report link
+if (reports.length > 0) {
+  const latest = reports[0];
+  document.getElementById('latest-link').href = latest.file;
+  const d = new Date(latest.date + 'T12:00:00');
+  document.getElementById('latest-date').textContent = d.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+
+// Build archive list
+const list = document.getElementById('report-list');
+reports.forEach(r => {
+  const li = document.createElement('li');
+  const a = document.createElement('a');
+  a.href = r.file;
+  const d = new Date(r.date + 'T12:00:00');
+  const formatted = d.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  a.innerHTML = `
+    <div>
+      <span class="report-date">${formatted}</span>
+      <span class="report-day">Day ${Math.floor((d - new Date('2026-02-28T00:00:00')) / 86400000)} of conflict</span>
+    </div>
+    <span class="arrow">→</span>
+  `;
+  li.appendChild(a);
+  list.appendChild(li);
+});
+</script>
+
+</body>
+</html>

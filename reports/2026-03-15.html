@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iran War Trading Monitor — March 15, 2026</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --orange: #d18616;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  h2 { font-size: 18px; color: var(--blue); margin: 28px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 15px; margin: 16px 0 8px; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+  .date { color: var(--muted); font-size: 13px; }
+  .status-banner {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .status-escalation { background: rgba(248,81,73,0.15); border: 1px solid var(--red); color: var(--red); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 10px; border-bottom: 1px solid rgba(48,54,61,0.5); }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .neutral { color: var(--yellow); }
+  .signal {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .signal-strong { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid var(--green); }
+  .signal-neutral { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .signal-weak { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid var(--red); }
+  .signal-entry { background: rgba(88,166,255,0.15); color: var(--blue); border: 1px solid var(--blue); }
+  .priority-tag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+  }
+  .tag-priority { background: rgba(248,81,73,0.2); color: var(--red); }
+  .tag-watchlist { background: rgba(139,148,158,0.2); color: var(--muted); }
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 4px 0; padding-left: 16px; position: relative; }
+  ul li::before { content: "→"; position: absolute; left: 0; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  .esc-active { color: var(--red); }
+  .esc-imminent { color: var(--orange); }
+  .esc-pending { color: var(--muted); }
+  .pnl { font-size: 13px; margin-top: 6px; padding: 8px 12px; border-radius: 6px; }
+  .pnl-positive { background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); }
+  .source { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .source a { color: var(--muted); text-decoration: underline; }
+  .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .dev-row { display: flex; gap: 12px; margin-bottom: 8px; }
+  .dev-num { color: var(--blue); font-weight: 700; min-width: 24px; }
+  .risk-low { color: var(--green); }
+  .risk-med { color: var(--yellow); }
+  .risk-high { color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>IRAN WAR SUPPLY SHOCK — DAILY SIGNAL REPORT</h1>
+    <div class="date">March 15, 2026 (Sunday) · Day 15 of Operation Epic Fury · Data as of market close March 14</div>
+  </div>
+</div>
+
+<div class="status-banner status-escalation">
+  🔴 OVERALL STATUS: ESCALATION — Houthi "Hour Zero" declared, dual-chokepoint risk imminent
+</div>
+
+<!-- 1. SITUATION UPDATE -->
+<h2>1. SITUATION UPDATE</h2>
+<div class="card">
+  <div class="dev-row">
+    <span class="dev-num">01</span>
+    <div><strong>Massive strikes continue on Day 15.</strong> Heavy airstrikes reported across Isfahan, Shiraz, southern Tehran, Dezful Air Base, Khomein, Hamadan, and Jask port in Hormozgan Province. Iran retaliating with missile and drone attacks on central Israel — rescue operations ongoing at multiple sites. Neither side signaling readiness for a deal.</div>
+  </div>
+  <div class="dev-row">
+    <span class="dev-num">02</span>
+    <div><strong>Houthi "Hour Zero" — Bab al-Mandab at risk.</strong> Senior Houthi officials announced March 14 alignment with Iran and imminent coordinated military operations. If Bab al-Mandab closes, Saudi Arabia's last functioning sea export corridor (Yanbu via Red Sea) is cut. This is the single most important escalation trigger in the playbook — moves us from Stage 2 to Stage 3.</div>
+  </div>
+  <div class="dev-row">
+    <span class="dev-num">03</span>
+    <div><strong>Trump calls on allies to send warships.</strong> US President calling on UK, France, China, South Korea, Japan to help secure Hormuz. This signals the US cannot unilaterally reopen the strait. Iran selectively allowing some traffic — Turkish ship, Indian LPG tankers, Saudi cargo for India passed. But overall transit remains near zero for Western-flagged vessels.</div>
+  </div>
+  <p style="margin-top: 12px; color: var(--red); font-weight: 600;">Trade Implication: Dual-chokepoint scenario is no longer theoretical. Houthi activation would be the most bullish catalyst for Strategies A, B, and oil broadly. Brent $140+ becomes base case if Bab al-Mandab closes.</p>
+</div>
+
+<!-- 2. PRICE OVERVIEW -->
+<h2>2. PRICE OVERVIEW</h2>
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th>Current</th>
+        <th>24h Change</th>
+        <th>Since War Start (Feb 28)</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Brent Crude</strong></td>
+        <td>$103.14</td>
+        <td class="up">+2.67%</td>
+        <td class="up">+~54% (from ~$67)</td>
+        <td><span class="signal signal-strong">BULLISH</span></td>
+      </tr>
+      <tr>
+        <td><strong>Gold (XAU/USD)</strong></td>
+        <td>$5,019</td>
+        <td class="down">-1.18%</td>
+        <td class="down">-2.7% est.</td>
+        <td><span class="signal signal-entry">DIP BUY ZONE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Bitcoin (BTC)</strong></td>
+        <td>$70,982</td>
+        <td class="up">+0.5%</td>
+        <td class="up">Outperforming all assets</td>
+        <td><span class="signal signal-strong">HOLDING SUPPORT</span></td>
+      </tr>
+      <tr>
+        <td><strong>S&P 500</strong></td>
+        <td>5,638</td>
+        <td class="down">-1.5% (Fri)</td>
+        <td class="down">3-week losing streak</td>
+        <td><span class="signal signal-weak">BEARISH</span></td>
+      </tr>
+      <tr>
+        <td><strong>Nasdaq</strong></td>
+        <td>17,303</td>
+        <td class="down">-1.3% (wk)</td>
+        <td class="down">Underperforming</td>
+        <td><span class="signal signal-weak">BEARISH</span></td>
+      </tr>
+      <tr>
+        <td><strong>US 10Y Yield</strong></td>
+        <td>4.28%</td>
+        <td class="up">+3 bps</td>
+        <td class="up">Near 4-week highs</td>
+        <td><span class="signal signal-neutral">ELEVATED</span></td>
+      </tr>
+      <tr>
+        <td><strong>DXY (Dollar)</strong></td>
+        <td>100.50</td>
+        <td class="up">+0.76%</td>
+        <td class="up">+3.7% (1-month)</td>
+        <td><span class="signal signal-strong">STRONG</span></td>
+      </tr>
+      <tr>
+        <td><strong>VIX</strong></td>
+        <td>27.19</td>
+        <td class="down">-0.37%</td>
+        <td class="up">Elevated</td>
+        <td><span class="signal signal-neutral">HIGH</span></td>
+      </tr>
+      <tr>
+        <td><strong>VLCC Day Rate</strong></td>
+        <td>$424k/day</td>
+        <td>—</td>
+        <td class="up">+430% (from ~$80k)</td>
+        <td><span class="signal signal-strong">RECORD</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="source">Sources: Investing.com, TradingEconomics, CNBC, Baltic Exchange, CoinMarketCap</div>
+</div>
+
+<!-- 3. PRIORITY STRATEGY SIGNALS -->
+<h2>3. PRIORITY STRATEGY SIGNALS</h2>
+
+<!-- Strategy A -->
+<div class="card">
+  <h3>A) FERTILIZER & AGRICULTURE <span class="priority-tag tag-priority">PRIORITY</span> <span class="signal signal-strong" style="margin-left: 8px;">STRENGTHENING</span></h3>
+  <ul>
+    <li><strong>Urea:</strong> Up ~30% since war start. FOB NOLA surged from $516 to $683/mt intraweek. CBOT front-month at $579.75. QatarEnergy's Ras Laffan urea plant (world's largest single-site) offline — lost gas feedstock after drone attack.</li>
+    <li><strong>Sulfur:</strong> Critical shortage. Chinese traders report zero spot cargoes available globally. Indonesia 70% dependent on Gulf supply — scrambling.</li>
+    <li><strong>Wheat:</strong> May contract hit $6.35/bu — multi-month high. Corn recovering from $4.25 lows. All grain markets volatile with fertilizer cost pass-through pricing in.</li>
+    <li><strong>NTR/CF/MOS:</strong> Fertilizer stocks benefiting from pricing power. Spring planting window is NOW — US 25% short on usual urea imports. Cannot be made up.</li>
+    <li><strong>Carnegie Endowment warning:</strong> Fertilizer blockage through Hormuz could trigger global food crisis, echoing 2022 Russia-Ukraine dynamics.</li>
+  </ul>
+  <p style="margin-top: 10px; font-weight: 600; color: var(--green);">Assessment: STRONGLY REINFORCING. Every sub-indicator flashing green. Spring planting window closing. Thesis fully intact and accelerating. If Houthi closes Bab al-Mandab, Yanbu sulfur/urea exports also threatened — would be a second-order accelerant.</p>
+  <div class="source">Sources: <a href="https://www.agweb.com/news/policy/politics/farmers-face-skyrocketing-fertilizer-prices-there-short-and-long-term-fix">AgWeb</a>, <a href="https://carnegieendowment.org/emissary/2026/03/fertilizer-iran-hormuz-food-crisis">Carnegie Endowment</a>, <a href="https://wkzo.com/2026/03/13/iran-war-deprives-us-farmers-of-affordable-fertilizer-as-spring-planting-looms/">WKZO</a></div>
+</div>
+
+<!-- Strategy B -->
+<div class="card">
+  <h3>B) TANKER & SHIPPING <span class="priority-tag tag-priority">PRIORITY</span> <span class="signal signal-strong" style="margin-left: 8px;">STRENGTHENING</span></h3>
+  <ul>
+    <li><strong>VLCC Rates:</strong> TD3C at record $423,736/day — surpassing 2008 peak by 21%. A single VLCC voyage MEG→China now costs ~$26.7M in transport alone (vs ~$4M pre-war). Rates sustained, not spiking-and-fading.</li>
+    <li><strong>Hormuz Transits:</strong> Near-zero for Western-flagged vessels. Some selective passage for India/Turkey, but overall 98%+ reduction. 984 tankers stranded in region.</li>
+    <li><strong>Insurance:</strong> War risk coverage pulled. Reinsurance market frozen. Even if strait reopens tomorrow, re-underwriting takes weeks/months.</li>
+    <li><strong>Cape of Good Hope rerouting:</strong> +112% in diversions on Day 1 alone. Each rerouted voyage adds 10,000+ nautical miles → binds tonnage → self-reinforcing rate pressure.</li>
+    <li><strong>FRO:</strong> $35.49 (+62.6% YTD). DHT: +59% YTD. Market still pricing V-shaped recovery — reality is U or L-shaped.</li>
+  </ul>
+  <p style="margin-top: 10px; font-weight: 600; color: var(--green);">Assessment: STRONGLY REINFORCING. Rates at levels never seen in 50 years. Insurance/rerouting dynamics create multi-quarter tailwind even in ceasefire scenario. VLCC second-hand prices at decade highs — market confirming duration. Houthi escalation would add Red Sea disruption on top.</p>
+  <div class="source">Sources: <a href="https://www.gosships.com/very-large-crude-carriers-command-record-423-736-per-day-as-tanker-market-explodes/">GoSShips</a>, <a href="https://www.seatrade-maritime.com/tankers/vlcc-rates-skyrocket-to-hit-never-done-before-highs">Seatrade Maritime</a>, <a href="https://www.lloydslist.com/LL1156492/Crude-tanker-rates-in-unchartered-territory-VLCC-index-tops-420K">Lloyd's List</a></div>
+</div>
+
+<!-- Strategy E — BTC -->
+<div class="card">
+  <h3>E) BITCOIN — ACTIVE POSITION <span class="priority-tag tag-priority">ACTIVE LONG</span> <span class="signal signal-strong" style="margin-left: 8px;">HOLDING</span></h3>
+  <div class="pnl pnl-positive">
+    <strong>Position P&L:</strong> Entry &lt;$70k → Current $70,982 → <span class="up">+1.4% to +10%+ depending on exact entry</span>. Higher lows pattern intact ($64k→$66k→$68k→$69.4k→$70.6k).
+  </div>
+  <ul style="margin-top: 10px;">
+    <li><strong>Price Action:</strong> BTC at $70,982 — holding above $70k support. Range compression $70k-$74k continues. CNBC confirmed BTC outperforming S&P 500, Nasdaq, and Gold since war start.</li>
+    <li><strong>ETF Flows:</strong> Mixed but net positive trend. March 11: +$115.2M (IBIT +$115.3M dominant). March 9: +$167.1M. March 6 saw -$348.9M outflow — but quickly reversed. Institutional bid intact.</li>
+    <li><strong>$74k Resistance:</strong> Not tested yet this week. Compression continues. Breakout above $74k = technically significant — would confirm war-bid thesis.</li>
+    <li><strong>$70k Support:</strong> Holding. Multiple tests, all defended. This is the key level to watch.</li>
+    <li><strong>Correlation:</strong> Decoupling from equities (S&P -1.5% while BTC flat/up). Acting as alternative store of value, especially with Gold suppressed by DXY strength.</li>
+  </ul>
+  <p style="margin-top: 10px; font-weight: 600; color: var(--green);">Assessment: RANGE-BOUND / BREAKOUT SETUP. Pattern of higher lows intact. $70k holding. ETF flows net positive. Equities underperforming = relative strength. Key trigger: break above $74k. Risk: break below $64k invalidates thesis. Houthi escalation likely bullish for BTC as risk-off + liquidity scramble.</p>
+  <div class="source">Sources: <a href="https://www.cnbc.com/2026/03/14/bitcoin-outperforms-sp-500-nasdaq-gold-since-the-start-of-iran-war.html">CNBC</a>, <a href="https://farside.co.uk/btc/">Farside Investors</a>, <a href="https://www.latestly.com/business/bitcoin-price-today-march-15-2026-btc-price-at-usd-70982-maintaining-stability-may-rise-in-future-7354459.html">Latestly</a></div>
+</div>
+
+<!-- 4. WATCHLIST -->
+<h2>4. WATCHLIST</h2>
+<div class="grid">
+
+  <!-- Strategy C -->
+  <div class="card">
+    <h3>C) GOLD CONTRARIAN <span class="priority-tag tag-watchlist">WATCHLIST</span></h3>
+    <p><strong>XAU/USD:</strong> $5,019 — down 1.18% on session, -2.7% since war start. Paradoxical weakness continues as DXY surges to 100.50 (highest since Nov 2025). US 10Y at 4.28%.</p>
+    <p style="margin-top: 6px;">The thesis remains intact: oil shock → persistent inflation → real rates go negative → Gold re-rates. But timing unclear while USD bid persists. JPM $6,300 target, DB $6,000.</p>
+    <p style="margin-top: 8px;"><span class="signal signal-entry">ENTRY CLOSER — WAIT FOR DXY PEAK</span></p>
+    <div class="source">Watch: CPI data, Fed comments, DXY reversal below 99</div>
+  </div>
+
+  <!-- Strategy D -->
+  <div class="card">
+    <h3>D) HELIUM → SEMICONDUCTORS <span class="priority-tag tag-watchlist">WATCHLIST</span></h3>
+    <p><strong>Ras Laffan:</strong> Offline since March 2 (drone attack). Force majeure declared March 4. 30% of global helium supply removed. Tom's Hardware reports chip supply chain on "two-week clock" — that clock is now past Day 13.</p>
+    <p style="margin-top: 6px;"><strong>SOXX:</strong> $331.32 — relatively resilient. SK Hynix claims diversified supply + sufficient inventory. TSMC says no notable impact yet. But if outage extends, redistribution takes months.</p>
+    <p style="margin-top: 8px;"><span class="signal signal-neutral">NEUTRAL — APPROACHING CRITICAL THRESHOLD</span></p>
+    <div class="source">Watch: QatarEnergy restart announcements, SK Hynix/Samsung guidance revisions</div>
+  </div>
+
+  <!-- Strategy F -->
+  <div class="card">
+    <h3>F) WATER & GULF CAPITAL FLIGHT <span class="priority-tag tag-watchlist">WATCHLIST</span></h3>
+    <p>Desalination vulnerability now globally known. Attacks confirmed on Bahrain and Iran facilities. No large-scale systematic targeting yet — but Houthi escalation raises risk profile significantly. Dubai real estate under pressure from conflict proximity.</p>
+    <p style="margin-top: 8px;"><span class="signal signal-neutral">STABLE — MONITORING FOR ESCALATION</span></p>
+    <div class="source">Watch: Desalination plant attacks, Gulf capital flow data, XYL/VIE prices</div>
+  </div>
+
+  <div class="card" style="border-color: var(--blue);">
+    <h3 style="color: var(--blue);">KEY DATES AHEAD</h3>
+    <ul>
+      <li><strong>Imminent:</strong> Houthi "Hour Zero" activation</li>
+      <li><strong>Late March:</strong> US Navy convoy operations announced</li>
+      <li><strong>April:</strong> USDA Crop Progress Reports begin</li>
+      <li><strong>Ongoing:</strong> IEA 400M barrel reserve draw (~25 days coverage from March 12)</li>
+      <li><strong>~March 28:</strong> Helium 4-week mark — critical for chip fabs</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 5. ESCALATION TRACKER -->
+<h2>5. ESCALATION TRACKER</h2>
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Escalation Level</th>
+        <th>Status</th>
+        <th>Change</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Hormuz Closed</td>
+        <td class="esc-active">✅ ACTIVE — Day 11</td>
+        <td>Selective passage for India/Turkey only</td>
+      </tr>
+      <tr>
+        <td>Houthi "Hour Zero" / Bab al-Mandab</td>
+        <td class="esc-imminent">⚠️ IMMINENT</td>
+        <td style="color: var(--red); font-weight: 600;">DECLARED March 14 — activation expected within days</td>
+      </tr>
+      <tr>
+        <td>Desalination Plants Under Attack</td>
+        <td class="esc-imminent">⚠️ ISOLATED</td>
+        <td>Bahrain + Iran facilities hit. No systematic campaign yet</td>
+      </tr>
+      <tr>
+        <td>US Navy Convoy Operations</td>
+        <td class="esc-pending">🔲 ANNOUNCED</td>
+        <td>Trump calling on allies. Timeline: "late March"</td>
+      </tr>
+      <tr>
+        <td>IEA Reserve Release</td>
+        <td class="esc-active">✅ ACTIVE — 400M bbl</td>
+        <td>Day 3 of release. Market shrugged it off — insufficient vs. 15 mb/d gap</td>
+      </tr>
+      <tr>
+        <td>Ceasefire Negotiations</td>
+        <td class="esc-pending">🔲 NO PROGRESS</td>
+        <td>Both sides say "not ready for a deal" (Al Jazeera, March 15)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 6. RISK MATRIX -->
+<h2>6. RISK MATRIX — WHAT CAN BREAK THE TRADES?</h2>
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Risk</th>
+        <th>Probability</th>
+        <th>Monitoring</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Fast Ceasefire</td>
+        <td class="risk-low">LOW — Both sides say not ready</td>
+        <td>Trump statements, diplomatic channels</td>
+      </tr>
+      <tr>
+        <td>Successful Navy Escorts (Hormuz reopening)</td>
+        <td class="risk-low">LOW — Weeks away, complex logistics</td>
+        <td>Pentagon briefings, tanker transit counts</td>
+      </tr>
+      <tr>
+        <td>Houthi Escalation (Bab al-Mandab closure)</td>
+        <td class="risk-high">HIGH — "Hour Zero" declared</td>
+        <td>UKMTO, Al Jazeera Yemen, shipping alerts</td>
+      </tr>
+      <tr>
+        <td>Large-Scale Desalination Attack</td>
+        <td class="risk-med">MEDIUM — Precedent set, Houthi capability</td>
+        <td>Gulf state media, IAEA reports</td>
+      </tr>
+      <tr>
+        <td>Oil Spill Event</td>
+        <td class="risk-med">MEDIUM — 984 stranded tankers = risk</td>
+        <td>Greenpeace, maritime incident reports</td>
+      </tr>
+      <tr>
+        <td>Global Liquidity Crunch (breaks BTC)</td>
+        <td class="risk-med">MEDIUM — If oil stays >$100 for weeks</td>
+        <td>Credit spreads, TED spread, funding markets</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 7. BOTTOM LINE -->
+<h2>7. BOTTOM LINE</h2>
+<div class="card" style="border-color: var(--red);">
+  <p><strong style="color: var(--red);">Most Urgent:</strong> Houthi "Hour Zero" is the #1 catalyst to watch. Activation could happen within hours to days. If Bab al-Mandab closes, we move to Stage 3 (dual chokepoint closure). This would be the single most bullish event for Strategies A (fertilizer — Yanbu exports cut) and B (tankers — Red Sea rerouting becomes impossible, Cape of Good Hope becomes only option). Brent targets $140-200+.</p>
+
+  <p style="margin-top: 12px;"><strong style="color: var(--blue);">BTC Position:</strong> In profit. $70k support holding well. No action needed. Trail stop mentally at $67k (below Feb 28 pattern of higher lows). Watch for $74k breakout as confirmation signal.</p>
+
+  <p style="margin-top: 12px;"><strong style="color: var(--yellow);">Conviction Changes:</strong></p>
+  <ul>
+    <li><strong>Strategy A (Fertilizer):</strong> ↑ Conviction HIGHER. Urea supply chain broken, spring window closing, Carnegie warns of food crisis.</li>
+    <li><strong>Strategy B (Tanker):</strong> ↑ Conviction HIGHER. Record rates sustained, not just spiked. Insurance/rerouting create structural duration.</li>
+    <li><strong>Strategy D (Helium):</strong> → NEUTRAL. Two-week clock expiring but SK Hynix/TSMC claim sufficient inventory. Monitor closely next 7 days.</li>
+    <li><strong>Strategy C (Gold):</strong> → WAIT. Thesis intact but DXY headwind persists. Entry signal: DXY reversal below 99.</li>
+  </ul>
+
+  <p style="margin-top: 12px;"><strong style="color: var(--green);">Next Critical Dates:</strong> Houthi activation (imminent), US Navy convoys (late March), helium 4-week mark (~March 28), IEA reserves exhausted (~April 6 at current draw rate), USDA Crop Progress begins (early April).</p>
+</div>
+
+<div class="footer">
+  Iran War Supply Shock — Asymmetric Trading Playbook · Daily Signal Report · Generated March 15, 2026<br>
+  This is not financial advice. All trades carry risk. Sources cited throughout.
+</div>
+
+</body>
+</html>
