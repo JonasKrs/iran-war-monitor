@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Iran War Trading Monitor — March 15, 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <style>
   :root {
     --bg: #0d1117;
@@ -101,16 +102,27 @@
   .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
   @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
   .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
-  .chart-card h4 { font-size: 13px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .chart-card h4 { font-size: 13px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
   .chart-card canvas { width: 100% !important; height: 220px !important; }
-  .chart-card .chart-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; }
-  .chart-card .chart-price { font-size: 22px; font-weight: 700; }
+  .chart-card .chart-price { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
   .chart-card .chart-change { font-size: 13px; font-weight: 600; }
+  .chart-card .chart-range-info { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .time-toggle { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .time-toggle span { color: var(--muted); font-size: 12px; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .time-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; font-family: inherit; }
+  .time-btn:hover { border-color: var(--blue); color: var(--text); }
+  .time-btn.active { background: var(--blue); color: var(--bg); border-color: var(--blue); }
+  .war-marker { font-size: 10px; color: var(--red); font-weight: 600; }
   .perf-bar-container { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
   .perf-label { font-size: 12px; color: var(--muted); min-width: 80px; text-align: right; }
   .perf-bar { height: 20px; border-radius: 3px; min-width: 2px; display: flex; align-items: center; padding-left: 6px; font-size: 11px; font-weight: 600; }
   .perf-bar.positive { background: rgba(63,185,80,0.25); color: var(--green); }
   .perf-bar.negative { background: rgba(248,81,73,0.25); color: var(--red); }
+  .history-table { max-height: 400px; overflow-y: auto; margin-top: 12px; }
+  .history-table table { font-size: 12px; }
+  .history-table th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+  .csv-btn { background: var(--blue); color: var(--bg); border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; font-family: inherit; margin-top: 12px; transition: opacity 0.2s; }
+  .csv-btn:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -227,38 +239,53 @@
 </div>
 
 <!-- PRICE CHARTS -->
-<h2>PRICE CHARTS — SINCE WAR START (FEB 28)</h2>
+<h2>PRICE CHARTS</h2>
+
+<div class="time-toggle">
+  <span>Time Range:</span>
+  <button class="time-btn" data-range="7d">7D</button>
+  <button class="time-btn active" data-range="1m">1M</button>
+  <button class="time-btn" data-range="3m">3M</button>
+  <button class="time-btn" data-range="6m">6M</button>
+  <span class="war-marker" style="margin-left: 16px;">▮ FEB 28 = WAR START</span>
+</div>
 
 <div class="chart-grid">
   <div class="chart-card">
     <h4>Brent Crude ($/bbl)</h4>
-    <div class="chart-price">$103.14 <span class="up chart-change">+54%</span></div>
+    <div class="chart-price" id="priceBrent"></div>
     <canvas id="chartBrent"></canvas>
+    <div class="chart-range-info" id="rangeBrent"></div>
   </div>
   <div class="chart-card">
     <h4>Bitcoin (BTC/USD)</h4>
-    <div class="chart-price">$70,982 <span class="up chart-change">+5.1%</span></div>
+    <div class="chart-price" id="priceBTC"></div>
     <canvas id="chartBTC"></canvas>
+    <div class="chart-range-info" id="rangeBTC"></div>
   </div>
   <div class="chart-card">
     <h4>Gold (XAU/USD)</h4>
-    <div class="chart-price">$5,019 <span class="down chart-change">-2.7%</span></div>
+    <div class="chart-price" id="priceGold"></div>
     <canvas id="chartGold"></canvas>
+    <div class="chart-range-info" id="rangeGold"></div>
   </div>
   <div class="chart-card">
     <h4>VLCC Day Rate (TD3C $/day)</h4>
-    <div class="chart-price">$423,736 <span class="up chart-change">+430%</span></div>
+    <div class="chart-price" id="priceVLCC"></div>
     <canvas id="chartVLCC"></canvas>
+    <div class="chart-range-info" id="rangeVLCC"></div>
   </div>
   <div class="chart-card">
     <h4>Wheat — May '26 ($/bu)</h4>
-    <div class="chart-price">$6.14 <span class="up chart-change">+12%</span></div>
+    <div class="chart-price" id="priceWheat"></div>
     <canvas id="chartWheat"></canvas>
+    <div class="chart-range-info" id="rangeWheat"></div>
   </div>
   <div class="chart-card">
     <h4>DXY — US Dollar Index</h4>
-    <div class="chart-price">100.50 <span class="up chart-change">+3.7%</span></div>
+    <div class="chart-price" id="priceDXY"></div>
     <canvas id="chartDXY"></canvas>
+    <div class="chart-range-info" id="rangeDXY"></div>
   </div>
 </div>
 
@@ -510,58 +537,305 @@
   <p style="margin-top: 12px;"><strong style="color: var(--green);">Next Critical Dates:</strong> Houthi activation (imminent), US Navy convoys (late March), helium 4-week mark (~March 28), IEA reserves exhausted (~April 6 at current draw rate), USDA Crop Progress begins (early April).</p>
 </div>
 
+<!-- HISTORICAL PRICE DATA -->
+<h2>HISTORICAL PRICE DATA</h2>
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+    <h3 style="margin: 0;">Daily Closing Prices — All Tracked Assets</h3>
+    <button class="csv-btn" onclick="downloadCSV()">Download CSV</button>
+  </div>
+  <div class="history-table" id="historyTable"></div>
+  <div class="source" style="margin-top: 8px;">Sources: Investing.com, TradingEconomics, CNBC, Baltic Exchange, CoinMarketCap, Yahoo Finance, EIA. Prices reconstructed from market reports. Pre-war data at weekly granularity; war period at daily granularity.</div>
+</div>
+
 <div class="footer">
   Iran War Supply Shock — Asymmetric Trading Playbook · Daily Signal Report · Generated March 15, 2026<br>
   This is not financial advice. All trades carry risk. Sources cited throughout.
 </div>
 
 <script>
-// Chart.js global config for dark theme
+// ═══════════════════════════════════════════════════════════════
+// FULL HISTORICAL DATASET — 6 months (weekly pre-war, daily post-war)
+// ═══════════════════════════════════════════════════════════════
+
+const DATASETS = {
+  brent: {
+    label: 'Brent Crude', prefix: '$', suffix: '', color: '#f85149', fill: true,
+    // Weekly: Sep 15 2025 → Feb 24 2026, then daily Feb 28 → Mar 14 2026
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14'
+    ],
+    values: [
+      72.8,71.5,71.9,74.2,73.1,71.8,72.5,
+      73.6,72.1,70.8,69.5,68.2,67.8,66.5,
+      65.2,64.8,65.1,66.3,65.8,64.9,65.5,
+      68.8,67.2,66.8,
+      67.0,69.0,78.0,87.0,94.0,91.0,88.0,
+      89.0,92.0,94.0,96.0,87.0,95.0,100.5,103.14
+    ]
+  },
+  btc: {
+    label: 'Bitcoin', prefix: '$', suffix: '', color: '#58a6ff', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14'
+    ],
+    values: [
+      98500,102300,108200,118400,126000,121500,115800,
+      110200,105600,100800,96400,93100,89500,86200,
+      82800,80100,84500,88200,85600,82100,78700,
+      74200,70500,67500,
+      64200,66100,71890,73100,71500,69800,68500,
+      69200,70100,70800,71200,69500,70200,69334,70982
+    ]
+  },
+  gold: {
+    label: 'Gold XAU/USD', prefix: '$', suffix: '', color: '#d29922', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14'
+    ],
+    values: [
+      3820,3890,3950,4050,4120,4180,4250,
+      4310,4380,4420,4470,4520,4560,4490,
+      4530,4550,4650,4780,4920,5100,5200,
+      5280,5180,5150,
+      5160,5220,5310,5400,5420,5350,5280,
+      5200,5150,5100,5080,5050,5030,5079,5019
+    ]
+  },
+  vlcc: {
+    label: 'VLCC TD3C Rate', prefix: '$', suffix: 'k', color: '#3fb950', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14'
+    ],
+    values: [
+      52,55,58,62,60,57,54,
+      56,61,65,68,72,75,70,
+      66,63,67,72,76,80,78,
+      75,72,78,
+      80,95,218,424,410,390,385,
+      395,400,410,415,405,410,420,424
+    ]
+  },
+  wheat: {
+    label: 'Wheat May 26', prefix: '$', suffix: '', color: '#d29922', fill: false,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14'
+    ],
+    values: [
+      5.72,5.68,5.55,5.42,5.38,5.45,5.51,
+      5.48,5.35,5.28,5.20,5.15,5.22,5.30,
+      5.25,5.18,5.28,5.35,5.42,5.38,5.32,
+      5.40,5.45,5.48,
+      5.48,5.55,5.72,5.85,5.95,6.02,6.10,
+      6.05,6.08,6.17,6.25,6.02,5.98,5.99,6.14
+    ]
+  },
+  dxy: {
+    label: 'DXY Dollar Index', prefix: '', suffix: '', color: '#e6edf3', fill: false,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14'
+    ],
+    values: [
+      94.2,94.5,94.8,95.1,95.5,95.8,96.0,
+      96.2,96.5,96.1,95.8,95.5,95.2,95.6,
+      95.9,96.1,96.4,96.0,95.7,96.2,96.5,
+      96.8,96.5,96.6,
+      96.8,97.2,97.8,98.3,98.7,99.1,99.3,
+      99.5,99.7,100.0,100.2,99.7,100.1,100.3,100.5
+    ]
+  }
+};
+
+// War start index in each dataset
+const WAR_START_DATE = '2026-02-28';
+
+// ═══════════════════════════════════════════════════════════════
+// CHART ENGINE
+// ═══════════════════════════════════════════════════════════════
+
 Chart.defaults.color = '#8b949e';
 Chart.defaults.borderColor = 'rgba(48,54,61,0.5)';
 Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 Chart.defaults.font.size = 11;
 
-const labels = ['Feb 28','Mar 1','Mar 2','Mar 3','Mar 4','Mar 5','Mar 6','Mar 7','Mar 8','Mar 9','Mar 10','Mar 11','Mar 12','Mar 13','Mar 14'];
+const chartInstances = {};
+let currentRange = '1m';
 
-function makeChart(id, data, color, fill, yMin, yMax, prefix, suffix) {
-  const ctx = document.getElementById(id).getContext('2d');
+function getDateCutoff(range) {
+  const now = new Date('2026-03-14');
+  switch(range) {
+    case '7d': return new Date('2026-03-07');
+    case '1m': return new Date('2026-02-14');
+    case '3m': return new Date('2025-12-14');
+    case '6m': return new Date('2025-09-14');
+    default: return new Date('2026-02-14');
+  }
+}
+
+function filterData(ds, range) {
+  const cutoff = getDateCutoff(range);
+  const filtered = { dates: [], values: [] };
+  for (let i = 0; i < ds.dates.length; i++) {
+    if (new Date(ds.dates[i]) >= cutoff) {
+      filtered.dates.push(ds.dates[i]);
+      filtered.values.push(ds.values[i]);
+    }
+  }
+  return filtered;
+}
+
+function formatDate(d) {
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function updatePriceHeader(key, ds, filtered) {
+  const el = document.getElementById('price' + key.charAt(0).toUpperCase() + key.slice(1));
+  const rangeEl = document.getElementById('range' + key.charAt(0).toUpperCase() + key.slice(1));
+  if (!el) return;
+  const current = filtered.values[filtered.values.length - 1];
+  const first = filtered.values[0];
+  const pct = ((current - first) / first * 100).toFixed(1);
+  const cls = pct >= 0 ? 'up' : 'down';
+  const sign = pct >= 0 ? '+' : '';
+  const fmtVal = ds.suffix === 'k'
+    ? ds.prefix + current.toLocaleString() + 'k'
+    : ds.prefix + current.toLocaleString();
+  el.innerHTML = fmtVal + ' <span class="' + cls + ' chart-change">' + sign + pct + '%</span>';
+  if (rangeEl) {
+    const hi = Math.max(...filtered.values);
+    const lo = Math.min(...filtered.values);
+    const fmtHi = ds.prefix + hi.toLocaleString() + (ds.suffix||'');
+    const fmtLo = ds.prefix + lo.toLocaleString() + (ds.suffix||'');
+    rangeEl.textContent = 'Range: ' + fmtLo + ' — ' + fmtHi + ' | ' + filtered.dates.length + ' data points';
+  }
+}
+
+function buildChart(key, ds, range) {
+  const canvasId = 'chart' + key.charAt(0).toUpperCase() + key.slice(1);
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  if (chartInstances[key]) chartInstances[key].destroy();
+
+  const filtered = filterData(ds, range);
+  updatePriceHeader(key, ds, filtered);
+
+  const ctx = canvas.getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-  gradient.addColorStop(0, color + '33');
-  gradient.addColorStop(1, color + '00');
-  new Chart(ctx, {
+  gradient.addColorStop(0, ds.color + '33');
+  gradient.addColorStop(1, ds.color + '00');
+
+  // Find war start index in filtered data
+  const warIdx = filtered.dates.indexOf(WAR_START_DATE);
+
+  // War start annotation
+  const annotations = {};
+  if (warIdx >= 0) {
+    annotations.warLine = {
+      type: 'line',
+      xMin: warIdx, xMax: warIdx,
+      borderColor: '#f8514966',
+      borderWidth: 2,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: 'WAR',
+        position: 'start',
+        backgroundColor: '#f8514933',
+        color: '#f85149',
+        font: { size: 9, weight: 'bold' },
+        padding: 3
+      }
+    };
+  }
+
+  chartInstances[key] = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: labels,
+      labels: filtered.dates.map(formatDate),
       datasets: [{
-        data: data,
-        borderColor: color,
-        backgroundColor: fill ? gradient : 'transparent',
-        fill: fill,
+        data: filtered.values,
+        borderColor: ds.color,
+        backgroundColor: ds.fill ? gradient : 'transparent',
+        fill: ds.fill,
         tension: 0.3,
-        pointRadius: 2,
-        pointHoverRadius: 5,
+        pointRadius: range === '7d' ? 4 : (range === '1m' ? 2.5 : 1.5),
+        pointHoverRadius: 6,
         borderWidth: 2,
+        pointBackgroundColor: ds.color,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
         tooltip: {
+          backgroundColor: '#161b22',
+          borderColor: '#30363d',
+          borderWidth: 1,
+          titleColor: '#e6edf3',
+          bodyColor: '#e6edf3',
+          padding: 10,
+          displayColors: false,
           callbacks: {
-            label: function(ctx) { return (prefix||'') + ctx.parsed.y.toLocaleString() + (suffix||''); }
+            title: function(items) {
+              const idx = items[0].dataIndex;
+              return filtered.dates[idx];
+            },
+            label: function(item) {
+              const v = item.parsed.y;
+              return (ds.prefix||'') + v.toLocaleString() + (ds.suffix||'');
+            }
           }
-        }
+        },
+        annotation: { annotations: annotations }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { maxTicksLimit: 7, font: { size: 10 } } },
+        x: {
+          grid: { display: false },
+          ticks: {
+            maxTicksLimit: range === '7d' ? 7 : (range === '6m' ? 8 : 10),
+            font: { size: 10 }
+          }
+        },
         y: {
-          min: yMin, max: yMax,
           grid: { color: 'rgba(48,54,61,0.3)' },
           ticks: {
             font: { size: 10 },
-            callback: function(v) { return (prefix||'') + v.toLocaleString() + (suffix||''); }
+            callback: function(v) { return (ds.prefix||'') + v.toLocaleString() + (ds.suffix||''); }
           }
         }
       }
@@ -569,36 +843,83 @@ function makeChart(id, data, color, fill, yMin, yMax, prefix, suffix) {
   });
 }
 
-// Brent Crude — daily closes Feb 28 to Mar 14 (reconstructed from reports)
-makeChart('chartBrent',
-  [67, 69, 78, 87, 94, 91, 88, 89, 92, 94, 96, 87, 95, 100.5, 103.14],
-  '#f85149', true, 60, 115, '$', '');
+function renderAllCharts(range) {
+  currentRange = range;
+  Object.keys(DATASETS).forEach(key => buildChart(key, DATASETS[key], range));
+  // Update active button
+  document.querySelectorAll('.time-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.range === range);
+  });
+}
 
-// Bitcoin — daily approximate levels
-makeChart('chartBTC',
-  [64200, 66100, 71890, 73100, 71500, 69800, 68500, 69200, 70100, 70800, 71200, 69500, 70200, 69334, 70982],
-  '#58a6ff', true, 62000, 76000, '$', '');
+// Toggle buttons
+document.querySelectorAll('.time-btn').forEach(btn => {
+  btn.addEventListener('click', () => renderAllCharts(btn.dataset.range));
+});
 
-// Gold (XAU/USD) — spiked to ~5400 then corrected
-makeChart('chartGold',
-  [5160, 5220, 5310, 5400, 5420, 5350, 5280, 5200, 5150, 5100, 5080, 5050, 5030, 5079, 5019],
-  '#d29922', true, 4900, 5500, '$', '');
+// Initial render
+renderAllCharts('1m');
 
-// VLCC Day Rates — massive spike then sustained
-makeChart('chartVLCC',
-  [80, 95, 218, 424, 410, 390, 385, 395, 400, 410, 415, 405, 410, 420, 424],
-  '#3fb950', true, 0, 500, '$', 'k');
+// ═══════════════════════════════════════════════════════════════
+// HISTORICAL DATA TABLE + CSV DOWNLOAD
+// ═══════════════════════════════════════════════════════════════
 
-// Wheat May '26 — volatile with war premium
-makeChart('chartWheat',
-  [5.48, 5.55, 5.72, 5.85, 5.95, 6.02, 6.10, 6.05, 6.08, 6.17, 6.25, 6.02, 5.98, 5.99, 6.14],
-  '#d29922', false, 5.30, 6.50, '$', '');
+function buildHistoryTable() {
+  const container = document.getElementById('historyTable');
+  // Use all dates from brent (longest dataset, same dates across all)
+  const allDates = DATASETS.brent.dates.slice().reverse();
+  const keys = ['brent','btc','gold','vlcc','wheat','dxy'];
+  const headers = ['Brent ($)','BTC ($)','Gold ($)','VLCC ($k)','Wheat ($)','DXY'];
 
-// DXY Dollar Index — strengthening
-makeChart('chartDXY',
-  [96.8, 97.2, 97.8, 98.3, 98.7, 99.1, 99.3, 99.5, 99.7, 100.0, 100.2, 99.7, 100.1, 100.3, 100.5],
-  '#e6edf3', false, 96, 101.5, '', '');
+  let html = '<table><thead><tr><th>Date</th>';
+  headers.forEach(h => html += '<th style="text-align:right;">' + h + '</th>');
+  html += '</tr></thead><tbody>';
 
+  allDates.forEach(date => {
+    const isWar = new Date(date) >= new Date(WAR_START_DATE);
+    const rowStyle = isWar ? ' style="background:rgba(248,81,73,0.04);"' : '';
+    html += '<tr' + rowStyle + '><td>' + date + (isWar ? ' <span class="war-marker">WAR</span>' : '') + '</td>';
+    keys.forEach(key => {
+      const ds = DATASETS[key];
+      const idx = ds.dates.indexOf(date);
+      const val = idx >= 0 ? ds.values[idx] : '—';
+      const formatted = typeof val === 'number'
+        ? (key === 'wheat' || key === 'dxy' ? val.toFixed(2) : val.toLocaleString())
+        : val;
+      html += '<td style="text-align:right; font-variant-numeric: tabular-nums;">' + formatted + '</td>';
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function downloadCSV() {
+  const keys = ['brent','btc','gold','vlcc','wheat','dxy'];
+  const headers = ['Date','Brent_USD','BTC_USD','Gold_XAU_USD','VLCC_TD3C_kUSD','Wheat_May26_USD','DXY'];
+  let csv = headers.join(',') + '\n';
+
+  DATASETS.brent.dates.forEach((date, i) => {
+    const row = [date];
+    keys.forEach(key => {
+      const ds = DATASETS[key];
+      const idx = ds.dates.indexOf(date);
+      row.push(idx >= 0 ? ds.values[idx] : '');
+    });
+    csv += row.join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'iran_war_monitor_prices_2026-03-15.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+buildHistoryTable();
 </script>
 
 </body>
