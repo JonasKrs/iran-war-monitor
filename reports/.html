@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iran War Trading Monitor — March 16, 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --orange: #d18616;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  h2 { font-size: 18px; color: var(--blue); margin: 28px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 15px; margin: 16px 0 8px; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+  .date { color: var(--muted); font-size: 13px; }
+  .status-banner {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .status-escalation { background: rgba(248,81,73,0.15); border: 1px solid var(--red); color: var(--red); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 10px; border-bottom: 1px solid rgba(48,54,61,0.5); }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .neutral { color: var(--yellow); }
+  .signal {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .signal-strong { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid var(--green); }
+  .signal-neutral { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .signal-weak { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid var(--red); }
+  .signal-entry { background: rgba(88,166,255,0.15); color: var(--blue); border: 1px solid var(--blue); }
+  .priority-tag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+  }
+  .tag-priority { background: rgba(248,81,73,0.2); color: var(--red); }
+  .tag-watchlist { background: rgba(139,148,158,0.2); color: var(--muted); }
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 4px 0; padding-left: 16px; position: relative; }
+  ul li::before { content: "\2192"; position: absolute; left: 0; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  .esc-active { color: var(--red); }
+  .esc-imminent { color: var(--orange); }
+  .esc-pending { color: var(--muted); }
+  .source { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .source a { color: var(--muted); text-decoration: underline; }
+  .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .dev-row { display: flex; gap: 12px; margin-bottom: 8px; }
+  .dev-num { color: var(--blue); font-weight: 700; min-width: 24px; }
+  .risk-low { color: var(--green); }
+  .risk-med { color: var(--yellow); }
+  .risk-high { color: var(--red); }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .chart-card h4 { font-size: 13px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .chart-card canvas { width: 100% !important; height: 220px !important; }
+  .chart-card .chart-price { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .chart-card .chart-change { font-size: 13px; font-weight: 600; }
+  .chart-card .chart-range-info { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .time-toggle { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .time-toggle span { color: var(--muted); font-size: 12px; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .time-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; font-family: inherit; }
+  .time-btn:hover { border-color: var(--blue); color: var(--text); }
+  .time-btn.active { background: var(--blue); color: var(--bg); border-color: var(--blue); }
+  .war-marker { font-size: 10px; color: var(--red); font-weight: 600; }
+  .perf-bar-container { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .perf-label { font-size: 12px; color: var(--muted); min-width: 80px; text-align: right; }
+  .perf-bar { height: 20px; border-radius: 3px; min-width: 2px; display: flex; align-items: center; padding-left: 6px; font-size: 11px; font-weight: 600; }
+  .perf-bar.positive { background: rgba(63,185,80,0.25); color: var(--green); }
+  .perf-bar.negative { background: rgba(248,81,73,0.25); color: var(--red); }
+  .history-table { max-height: 400px; overflow-y: auto; margin-top: 12px; }
+  .history-table table { font-size: 12px; }
+  .history-table th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+  .csv-btn { background: var(--blue); color: var(--bg); border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; font-family: inherit; margin-top: 12px; transition: opacity 0.2s; }
+  .csv-btn:hover { opacity: 0.85; }
+  .gov-alert { background: rgba(209,134,22,0.1); border: 1px solid var(--orange); border-radius: 6px; padding: 10px 14px; margin: 10px 0; }
+  .gov-alert-low { border-color: var(--green); background: rgba(63,185,80,0.05); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>IRAN WAR SUPPLY SHOCK — DAILY SIGNAL REPORT</h1>
+    <div class="date">March 16, 2026 (Monday) · Day 16 of Operation Epic Fury · Data as of Monday AM / Friday close March 14</div>
+  </div>
+</div>
+
+<div class="status-banner status-escalation">
+  OVERALL STATUS: ESCALATION — Hormuz closed to Western-flagged vessels, Houthi "Hour Zero" imminent, dual-chokepoint risk rising
+</div>
+
+<!-- 1. SITUATION UPDATE -->
+<h2>1. SITUATION UPDATE</h2>
+<div class="card">
+  <div class="dev-row">
+    <span class="dev-num">01</span>
+    <div><strong>War enters Day 16 with no ceasefire in sight.</strong> Iran FM Araghchi says Hormuz "closed to our enemies" and Iran "never asked for a ceasefire." Trump says Iran is ready to negotiate but terms "aren't good enough." Both sides actively striking — heavy bombardment on Isfahan, Shiraz, Tehran; Iran retaliating on Israeli territory. 2,000+ killed across the Middle East. Lebanon ground operations by Israel ongoing.</div>
+  </div>
+  <div class="dev-row">
+    <span class="dev-num">02</span>
+    <div><strong>Brent breaks $104 — all-time Hormuz crisis high.</strong> Brent crude hit $106.50 intraday before settling around $104.37. WTI at $94.65. Trump said US may hit Iran's oil hub "just for fun." IEA 400M barrel reserve release underway but market shrugs — insufficient vs. 15 mb/d gap. EIA forecasts Brent stays above $95 through May.</div>
+  </div>
+  <div class="dev-row">
+    <span class="dev-num">03</span>
+    <div><strong>Houthi "Hour Zero" — Bab al-Mandab closure imminent.</strong> Senior Houthi officials declared March 14 military alignment with Iran. Major shipping lines (Maersk, Hapag-Lloyd, CMA CGM) paused all Trans-Suez sailings. Goldman Sachs warns Houthi activation could push oil to $120. If Bab al-Mandab closes, Saudi Arabia's last functioning maritime export corridor is cut — true dual-chokepoint scenario.</div>
+  </div>
+  <div class="dev-row">
+    <span class="dev-num">04</span>
+    <div><strong>China tightens fertilizer export controls.</strong> Bloomberg reports China told exporters to halt nitrogen-potassium blend exports and reiterated urea restrictions. Phosphate exports suspended through August 2026. This removes the only global producer that could fill the Gulf supply gap — extremely bullish for fertilizer thesis.</div>
+  </div>
+  <div class="dev-row">
+    <span class="dev-num">05</span>
+    <div><strong>Helium clock past Day 14 — semiconductor risk rising.</strong> Qatar Ras Laffan helium (30% global supply) offline since March 2. SK Hynix claims sufficient inventory but industry buffer of 2-4 weeks is now exhausted for some fabs. Helium prices projected to surge 50-75% within 90 days.</div>
+  </div>
+  <p style="margin-top: 12px; color: var(--red); font-weight: 600;">Trade Implication: Dual-chokepoint scenario imminent. China fertilizer restrictions accelerate Strategy A thesis. Brent above $100 sustained. All priority strategies reinforcing. Houthi activation remains #1 near-term catalyst.</p>
+</div>
+
+<!-- 2. PRICE OVERVIEW -->
+<h2>2. PRICE OVERVIEW</h2>
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th>Current</th>
+        <th>24h Change</th>
+        <th>Since War Start (Feb 28)</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Brent Crude</strong></td>
+        <td>$104.37</td>
+        <td class="up">+1.19%</td>
+        <td class="up">+55.8% (from ~$67)</td>
+        <td><span class="signal signal-strong">BULLISH</span></td>
+      </tr>
+      <tr>
+        <td><strong>WTI Crude</strong></td>
+        <td>$94.65</td>
+        <td class="down">-4.11%</td>
+        <td class="up">+~45%</td>
+        <td><span class="signal signal-strong">BULLISH</span></td>
+      </tr>
+      <tr>
+        <td><strong>Gold (XAU/USD)</strong></td>
+        <td>$5,026</td>
+        <td class="up">+0.14%</td>
+        <td class="down">-2.6% est.</td>
+        <td><span class="signal signal-entry">DIP BUY ZONE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Bitcoin (BTC)</strong></td>
+        <td>$70,600</td>
+        <td class="down">-0.5%</td>
+        <td class="up">+10.0% (from $64.2k)</td>
+        <td><span class="signal signal-strong">HOLDING SUPPORT</span></td>
+      </tr>
+      <tr>
+        <td><strong>S&P 500</strong></td>
+        <td>5,638</td>
+        <td class="down">-1.5% (Fri)</td>
+        <td class="down">2026 low hit March 13</td>
+        <td><span class="signal signal-weak">BEARISH</span></td>
+      </tr>
+      <tr>
+        <td><strong>US 10Y Yield</strong></td>
+        <td>4.285%</td>
+        <td class="up">+3 bps</td>
+        <td class="up">Near 4-week highs</td>
+        <td><span class="signal signal-neutral">ELEVATED</span></td>
+      </tr>
+      <tr>
+        <td><strong>DXY (Dollar)</strong></td>
+        <td>100.0</td>
+        <td class="down">-0.5%</td>
+        <td class="up">+3.3% (from 96.8)</td>
+        <td><span class="signal signal-neutral">PULLING BACK</span></td>
+      </tr>
+      <tr>
+        <td><strong>VIX</strong></td>
+        <td>28.4</td>
+        <td class="up">+4.4%</td>
+        <td class="up">Elevated (from ~17)</td>
+        <td><span class="signal signal-neutral">HIGH</span></td>
+      </tr>
+      <tr>
+        <td><strong>VLCC Day Rate (TD3C)</strong></td>
+        <td>$326k/day</td>
+        <td class="down">-23.1%</td>
+        <td class="up">+308% (from ~$80k)</td>
+        <td><span class="signal signal-strong">EXTREME</span></td>
+      </tr>
+      <tr>
+        <td><strong>Urea NOLA FOB</strong></td>
+        <td>$645/mt</td>
+        <td class="up">+4.0%</td>
+        <td class="up">+36% (from ~$475)</td>
+        <td><span class="signal signal-strong">SURGING</span></td>
+      </tr>
+      <tr>
+        <td><strong>Henry Hub Gas</strong></td>
+        <td>$3.13/MMBtu</td>
+        <td class="down">-1.2%</td>
+        <td class="down">Mild weather drag</td>
+        <td><span class="signal signal-strong">CF MARGIN +</span></td>
+      </tr>
+      <tr>
+        <td><strong>Wheat (May '26)</strong></td>
+        <td>$4.41/bu</td>
+        <td class="up">+0.6%</td>
+        <td class="up">+~12%</td>
+        <td><span class="signal signal-neutral">ELEVATED</span></td>
+      </tr>
+      <tr>
+        <td><strong>Corn (May '26)</strong></td>
+        <td>$5.57/bu</td>
+        <td class="up">+0.8%</td>
+        <td class="up">Approaching $5 threshold</td>
+        <td><span class="signal signal-neutral">RISING</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="source">Sources: Investing.com, TradingEconomics, CNBC, Baltic Exchange, CoinGlass, Argus Media, CME Group, EIA</div>
+</div>
+
+<!-- PRICE CHARTS -->
+<h2>INTERACTIVE PRICE CHARTS</h2>
+
+<div class="time-toggle">
+  <span>Time Range:</span>
+  <button class="time-btn" data-range="7d">7D</button>
+  <button class="time-btn active" data-range="1m">1M</button>
+  <button class="time-btn" data-range="3m">3M</button>
+  <button class="time-btn" data-range="6m">6M</button>
+  <span class="war-marker" style="margin-left: 16px;">FEB 28 = WAR START</span>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h4>Brent Crude ($/bbl)</h4>
+    <div class="chart-price" id="priceBrent"></div>
+    <canvas id="chartBrent"></canvas>
+    <div class="chart-range-info" id="rangeBrent"></div>
+  </div>
+  <div class="chart-card">
+    <h4>Bitcoin (BTC/USD)</h4>
+    <div class="chart-price" id="priceBtc"></div>
+    <canvas id="chartBtc"></canvas>
+    <div class="chart-range-info" id="rangeBtc"></div>
+  </div>
+  <div class="chart-card">
+    <h4>Gold (XAU/USD)</h4>
+    <div class="chart-price" id="priceGold"></div>
+    <canvas id="chartGold"></canvas>
+    <div class="chart-range-info" id="rangeGold"></div>
+  </div>
+  <div class="chart-card">
+    <h4>VLCC Day Rate (TD3C $/day)</h4>
+    <div class="chart-price" id="priceVlcc"></div>
+    <canvas id="chartVlcc"></canvas>
+    <div class="chart-range-info" id="rangeVlcc"></div>
+  </div>
+  <div class="chart-card">
+    <h4>Wheat — May '26 ($/bu)</h4>
+    <div class="chart-price" id="priceWheat"></div>
+    <canvas id="chartWheat"></canvas>
+    <div class="chart-range-info" id="rangeWheat"></div>
+  </div>
+  <div class="chart-card">
+    <h4>DXY — US Dollar Index</h4>
+    <div class="chart-price" id="priceDxy"></div>
+    <canvas id="chartDxy"></canvas>
+    <div class="chart-range-info" id="rangeDxy"></div>
+  </div>
+</div>
+
+<!-- STRATEGY EQUITY PERFORMANCE -->
+<h2>STRATEGY EQUITY PERFORMANCE — SINCE FEB 28</h2>
+<div class="card">
+  <h3 style="margin-bottom: 12px;">Tanker Stocks (Strategy B)</h3>
+  <div class="perf-bar-container">
+    <span class="perf-label">FRO</span>
+    <div class="perf-bar positive" style="width: calc(62.6% * 3);">+62.6%</div>
+  </div>
+  <div class="perf-bar-container">
+    <span class="perf-label">DHT</span>
+    <div class="perf-bar positive" style="width: calc(59% * 3);">+59.0%</div>
+  </div>
+  <div class="perf-bar-container">
+    <span class="perf-label">INSW</span>
+    <div class="perf-bar positive" style="width: calc(45% * 3);">+45.0%</div>
+  </div>
+
+  <h3 style="margin-top: 20px; margin-bottom: 12px;">Fertilizer Stocks (Strategy A)</h3>
+  <div class="perf-bar-container">
+    <span class="perf-label">CF</span>
+    <div class="perf-bar positive" style="width: calc(30% * 3);">+30.0%</div>
+  </div>
+  <div class="perf-bar-container">
+    <span class="perf-label">NTR</span>
+    <div class="perf-bar positive" style="width: calc(23.5% * 3);">+23.5%</div>
+  </div>
+  <div class="perf-bar-container">
+    <span class="perf-label">MOS</span>
+    <div class="perf-bar positive" style="width: calc(9.2% * 3);">+9.2%</div>
+  </div>
+
+  <h3 style="margin-top: 20px; margin-bottom: 12px;">Indices &amp; Watchlist</h3>
+  <div class="perf-bar-container">
+    <span class="perf-label">SOXX</span>
+    <div class="perf-bar negative" style="width: calc(8% * 3);">-8.0%</div>
+  </div>
+  <div class="perf-bar-container">
+    <span class="perf-label">S&amp;P 500</span>
+    <div class="perf-bar negative" style="width: calc(5.2% * 3);">-5.2%</div>
+  </div>
+
+  <div class="source" style="margin-top: 12px;">Sources: Yahoo Finance, StockAnalysis.com, MarketBeat, TradingEconomics. Data as of market close March 14, 2026. CF at $129.57, NTR at $82.85, MOS at $29.31, FRO at $30.77, DHT at $17.38, INSW at $67.09.</div>
+</div>
+
+<!-- 3. PRIORITY STRATEGY SIGNALS -->
+<h2>3. PRIORITY STRATEGY SIGNALS</h2>
+
+<!-- Strategy A -->
+<div class="card">
+  <h3>A) FERTILIZER &amp; AGRICULTURE <span class="priority-tag tag-priority">PRIORITY</span> <span class="signal signal-strong" style="margin-left: 8px;">ACCELERATING</span></h3>
+  <ul>
+    <li><strong>Urea NOLA:</strong> $640-650/mt FOB, up $25.50/mt (+4%) from prior week's $617. Up ~36% since war start. Multiple March barges traded at $640-645/st FOB. Argus reports offers now at $650/st. Spring planting window is NOW — farmers must buy (near-zero price elasticity).</li>
+    <li><strong>China export ban reinforced:</strong> Bloomberg reports China told exporters to halt nitrogen-potassium blend exports. Phosphate exports suspended through August 2026. Urea export quotas not until April at earliest. This eliminates the only swing producer that could offset Gulf losses.</li>
+    <li><strong>Sulfur:</strong> Global supply-demand gap projected at -5.13Mt in 2026 (largest ever). Tampa sulfur contract up to $475-520/lt from $310/lt. Gulf = 44% of global sulfur exports — all offline.</li>
+    <li><strong>Grain futures rising:</strong> Corn at $5.57/bu (+4.25c), soybeans at $10.83/bu (+7.75c), wheat at $4.41/bu (+2.75c). Break-even for corn at ~$5/bu — fertilizer cost pass-through now squeezing margins.</li>
+    <li><strong>QatarEnergy Ras Laffan:</strong> World's largest single-site urea plant remains offline since March 2 drone attack. Restart takes weeks even after ceasefire. Carnegie Endowment warns of global food crisis parallel to 2022 Russia-Ukraine dynamics.</li>
+  </ul>
+  <p style="margin-top: 10px; font-weight: 600; color: var(--green);">Assessment: ACCELERATING. China export restrictions are a new second-order catalyst not priced in. Urea NOLA at $650 and climbing. Physical shortage arrives early April when pre-war pipeline depletes. If Houthi closes Bab al-Mandab, Yanbu exports also cut — third-order accelerant. Thesis fully intact and strengthening daily.</p>
+  <div class="source">Sources: <a href="https://www.argusmedia.com/en/news-and-insights/latest-market-news/2794957-nola-urea-prices-surge-on-us-iran-conflict">Argus Media</a>, <a href="https://farmpolicynews.illinois.edu/2026/03/fertilizer-prices-have-significant-rise-after-attack-on-iran/">Farm Policy News</a>, <a href="https://www.bloomberg.com/news/articles/2026-03-16/china-reins-in-fertilizer-exports-as-war-pushes-up-global-prices">Bloomberg</a></div>
+</div>
+
+<!-- CF HOT PICK -->
+<div class="card" style="border-color: var(--green);">
+  <h3 style="color: var(--green);">HOT PICK: CF INDUSTRIES (NYSE: CF) <span class="signal signal-strong" style="margin-left: 8px;">CONVICTION BUY</span></h3>
+  <p style="margin-bottom: 10px;">Purest listed play on rising nitrogen/urea prices. 100% North American production with US natural gas feedstock (~$3.13/MMBtu Henry Hub). Zero Hormuz dependency. When global urea prices spike, CF's margin explodes — costs stable, output price surges. #1 performer in S&P 500 in March 2026. Share price: <strong>$129.57</strong> (prev close $136.00; 52-week range $67.34-$137.44).</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
+    <div style="background: rgba(63,185,80,0.08); border-radius: 6px; padding: 10px;">
+      <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Margin Indicator</div>
+      <div style="font-size: 18px; font-weight: 700; margin-top: 2px;">Urea NOLA: $645/mt</div>
+      <div style="font-size: 12px; color: var(--muted);">Henry Hub: $3.13/MMBtu</div>
+      <div style="font-size: 12px; color: var(--green); font-weight: 600; margin-top: 4px;">Spread: WIDENING — Gas down, urea up. Maximum margin expansion.</div>
+      <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">24h change: Urea +4.0% / Gas -1.2% = Spread expanding (no MARGIN ALERT — within threshold)</div>
+    </div>
+    <div style="background: rgba(63,185,80,0.08); border-radius: 6px; padding: 10px;">
+      <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Price Scenarios</div>
+      <div style="font-size: 12px; margin-top: 4px;"><span class="up">Bull ($750-900 urea):</span> CF $168-$195 (+30-50%)</div>
+      <div style="font-size: 12px;"><span class="neutral">Base ($550-650):</span> CF $136-$149 (+5-15%)</div>
+      <div style="font-size: 12px;"><span class="down">Bear ($450-500):</span> CF $103-$110 (-15-20%)</div>
+      <div style="font-size: 12px; color: var(--green); font-weight: 600; margin-top: 4px;">Current urea at $645 = BASE/BULL boundary. Asymmetry: ~2:1 to 3:1</div>
+    </div>
+  </div>
+
+  <p style="font-size: 13px;"><strong>Why CF &gt; NTR &gt; MOS:</strong> CF +30% since war start vs NTR +23.5% vs MOS +9.2%. CF = maximum beta on nitrogen/urea. NTR diversified (N+P+K+Retail) = lower leverage. MOS = phosphate/potash = only indirect exposure via sulfur shortage.</p>
+
+  <p style="font-size: 13px; margin-top: 8px;"><strong>What the market hasn't priced:</strong> Physical shortage arrives early April (pipeline of pre-war shipments depleting). China export restrictions tightened TODAY (Bloomberg). Houthi Bab al-Mandab would cut last Yanbu urea exports. ~50% of US corn nitrogen applied March-May — farmers MUST buy. QatarEnergy Ras Laffan (5.6 Mt/year) physically damaged — weeks to restart even post-ceasefire.</p>
+
+  <p style="font-size: 13px; margin-top: 8px;"><strong>Bullish signals active:</strong> Urea NOLA >$600 (active), Hormuz transits near zero (active), China tightening exports (active TODAY), QatarEnergy offline (active).</p>
+  <p style="font-size: 13px;"><strong>Bearish signals:</strong> Ceasefire + Hormuz &gt;50 transits/day, Qatar Ras Laffan restart, China loosens exports, Urea NOLA &lt;$500.</p>
+
+  <!-- GOV INTERVENTION RISK -->
+  <div class="gov-alert gov-alert-low" style="margin-top: 14px;">
+    <h3 style="color: var(--green); margin-top: 0;">US GOV INTERVENTION RISK: <span style="font-weight: 700;">LOW</span></h3>
+    <p style="font-size: 13px; margin-top: 4px;">No DPA classification for nitrogen fertilizer announced. No fertilizer export ban enacted. The 2026 Farm Bill (Farm, Food, and National Security Act) passed House Agriculture Committee on March 5 with bipartisan 34-17 vote — includes farm support provisions but NO fertilizer-specific intervention clauses identified. Trump's DPA executive order targeted glyphosate and elemental phosphorus — not nitrogen/urea. No Senate Agriculture Committee hearings on fertilizer supply emergency detected. No Farm Action letters or White House executive orders addressing fertilizer supply chain.</p>
+    <p style="font-size: 12px; color: var(--muted); margin-top: 6px;"><strong>Monitoring:</strong> Senate Ag Committee, Farm Action advocacy, White House EOs, USDA Statements. Status: LOW — no activity detected. Next trigger: any legislative proposal to invoke DPA for nitrogen or restrict domestic fertilizer exports.</p>
+  </div>
+</div>
+
+<!-- Strategy B -->
+<div class="card">
+  <h3>B) TANKER &amp; SHIPPING <span class="priority-tag tag-priority">PRIORITY</span> <span class="signal signal-strong" style="margin-left: 8px;">CONSOLIDATING AT EXTREME LEVELS</span></h3>
+  <ul>
+    <li><strong>VLCC Rates:</strong> TD3C assessed at WS348.89, TCE ~$326,198/day — down from peak $445,200/day but still 4x pre-war levels. Some fixtures hit $770k/day for Indian petrochemical. A single VLCC charter India $538k/day (Reliance Industries). Market normalizing from parabolic spike but at structurally elevated base.</li>
+    <li><strong>Hormuz Transits:</strong> Near-zero for Western-flagged vessels. Selective passage for India (2 gas tankers negotiated via FM Jaishankar), Pakistan (3 tankers), Turkey. Iran FM Araghchi says strait "open, but closed to our enemies." ~1,000 tankers stranded.</li>
+    <li><strong>Insurance:</strong> War risk insurance returned at extreme premiums — VLCC voyage premiums $2-3M, rates at 1% of hull value (4x pre-war), 96-hour cancellation clauses standard. Major P&I clubs voided existing coverage March 5.</li>
+    <li><strong>Stock performance:</strong> FRO +62.6% YTD ($30.77), DHT +59% ($17.38), INSW +45% ($67.09, near all-time high of $78.51). INSW declared largest quarterly dividend in history.</li>
+  </ul>
+  <p style="margin-top: 10px; font-weight: 600; color: var(--green);">Assessment: CONSOLIDATING AT EXTREME LEVELS. Rates pulled back from $424k peak to $326k — healthy consolidation, not reversal. Insurance/rerouting dynamics create multi-quarter tailwind even in ceasefire scenario. Houthi Bab al-Mandab activation = additional Red Sea disruption = second leg up for tanker rates.</p>
+  <div class="source">Sources: <a href="https://www.lloydslist.com/LL1156492/Crude-tanker-rates-in-unchartered-territory-VLCC-index-tops-420K">Lloyd's List</a>, <a href="https://www.seatrade-maritime.com/tankers/vlcc-rates-skyrocket-to-hit-never-done-before-highs">Seatrade Maritime</a>, <a href="https://www.cnbc.com/2026/03/03/middle-east-crisis-iran-us-shipping-oil-tankers-strait-of-hormuz.html">CNBC</a>, <a href="https://maritime-hub.com/vlcc-freight-rates-skyrocket-amid-us-iran-conflict-latest-market-update-2026/">Maritime Hub</a></div>
+</div>
+
+<!-- Strategy E — BTC -->
+<div class="card">
+  <h3>E) BITCOIN <span class="priority-tag tag-priority">PRIORITY</span> <span class="signal signal-strong" style="margin-left: 8px;">RANGE-BOUND / BREAKOUT SETUP</span></h3>
+  <ul>
+    <li><strong>Price Action:</strong> BTC at ~$70,600 — holding above $70k support. Range compression $70k-$74k continues into third week. Higher lows pattern: $64.2k (Feb 28) → $68.5k (Mar 6) → $69.3k (Mar 13) → $70.6k (Mar 15). Compression tightening toward resolution.</li>
+    <li><strong>ETF Flows:</strong> 5-day inflow streak through March 13: total ~$763M net inflows since March 9. IBIT dominated with $143.6M on March 13. Total US Bitcoin ETF holdings: 1.288M BTC (~$90.8B). Prior -$349M outflow on March 6 fully reversed — institutional demand recovered.</li>
+    <li><strong>$74k Resistance:</strong> BTC briefly cleared $73k (Strategy/Coinbase rallied 5%/3% respectively). $74k breakout = technically significant confirmation of war-bid thesis.</li>
+    <li><strong>Macro overlay:</strong> Goldman Sachs notes BTC as potential "winner from looming government stimulus" as oil shock threatens GDP. Rising oil + cooling growth = expected fiscal/monetary response = bullish BTC macro backdrop. BTC decoupling from equities (S&P at 2026 low while BTC holds).</li>
+  </ul>
+  <p style="margin-top: 10px; font-weight: 600; color: var(--green);">Assessment: RANGE-BOUND / BREAKOUT SETUP. Higher lows pattern fully intact. ETF flows net positive (5-day streak, $763M). Decoupling from equities = relative strength signal. Key trigger: break above $74k. Risk: break below $64k invalidates structure. Houthi escalation likely bullish (risk-off + liquidity scramble favors non-sovereign assets).</p>
+  <div class="source">Sources: <a href="https://farside.co.uk/btc/">Farside Investors</a>, <a href="https://www.coinglass.com/etf/bitcoin">CoinGlass</a>, <a href="https://bitcoinethereumnews.com/bitcoin/bitcoin-etf-inflows-hit-167m-will-btc-price-sustain-above-70k/">BTC ETF News</a>, <a href="https://ts2.tech/en/bitcoin-price-today-near-70600-btc-forecast-hinges-on-74000-as-etf-inflows-return/">TS2 Tech</a></div>
+</div>
+
+<!-- 4. WATCHLIST -->
+<h2>4. WATCHLIST</h2>
+<div class="grid">
+
+  <!-- Strategy C -->
+  <div class="card">
+    <h3>C) GOLD CONTRARIAN <span class="priority-tag tag-watchlist">WATCHLIST</span></h3>
+    <p><strong>XAU/USD:</strong> $5,026 — attempting to recover. DXY pulling back from 100.5 to ~100.0 on Monday as reports of Hormuz coalition reduce safe-haven demand. US 10Y at 4.285%. Real yield (10Y TIPS) at 1.89%. Fed on hold at 3.50-3.75%, market pricing only 1 cut in 2026.</p>
+    <p style="margin-top: 6px;">The thesis: oil shock → persistent inflation → real rates go negative → Gold re-rates. DXY showing early signs of peaking — Monday pullback toward 100 is first potential signal. JPM $6,300 target, DB $6,000. Gold paradox continues but DXY topping could trigger entry.</p>
+    <p style="margin-top: 8px;"><span class="signal signal-entry">ENTRY CLOSER — DXY SHOWING EARLY PEAK SIGNALS</span></p>
+    <div class="source">Watch: Fed decision this week, CPI data, DXY reversal below 99</div>
+  </div>
+
+  <!-- Strategy D -->
+  <div class="card">
+    <h3>D) HELIUM → SEMICONDUCTORS <span class="priority-tag tag-watchlist">WATCHLIST</span></h3>
+    <p><strong>Ras Laffan:</strong> Offline since March 2 (drone attack). Force majeure since March 4. 30% of global helium supply removed. We are now past Day 14 — the 2-week buffer for advanced fabs is exhausted. Helium prices projected +50-75% within 90 days. Redistribution of cryogenic equipment takes months.</p>
+    <p style="margin-top: 6px;"><strong>Industry:</strong> SK Hynix claims diversified supply; TSMC says no impact yet. But Tom's Hardware reports some fabs now actively scrambling. Korean electronics industry reporting aluminum + helium shortages weighing on production. North American Helium positioning as alternative supplier.</p>
+    <p style="margin-top: 8px;"><span class="signal signal-weak">ELEVATED — TWO-WEEK BUFFER EXHAUSTED</span></p>
+    <div class="source">Watch: QatarEnergy restart, SK Hynix/Samsung production guidance, SOXX price action</div>
+  </div>
+
+  <!-- Strategy F -->
+  <div class="card">
+    <h3>F) WATER &amp; GULF CAPITAL FLIGHT <span class="priority-tag tag-watchlist">WATCHLIST</span></h3>
+    <p><strong>Desalination attacks confirmed:</strong> Bahrain facility hit by Iranian drone (March 8). US struck Qeshm Island desalination plant in Iran. Iranian strikes near Dubai's Jebel Ali desalination complex (~12 miles from 43 desalination units producing 160B gallons/year). 400+ desalination plants on Gulf shores supply ~100M people. Bloomberg: "Real risk is water, not oil." Dubai International Airport temporarily suspended flights after drone attack.</p>
+    <p style="margin-top: 8px;"><span class="signal signal-neutral">ELEVATED — ATTACKS CONFIRMED, NO SYSTEMATIC CAMPAIGN YET</span></p>
+    <div class="source">Watch: Desalination plant targeting, Gulf capital flows, Dubai RE data, XYL/VIE/ERII</div>
+  </div>
+
+  <div class="card" style="border-color: var(--blue);">
+    <h3 style="color: var(--blue);">KEY DATES AHEAD</h3>
+    <ul>
+      <li><strong>This week:</strong> Fed rate decision (hold expected), Houthi "Hour Zero" activation (imminent)</li>
+      <li><strong>Late March:</strong> US Navy convoy operations, helium 4-week mark (~March 28)</li>
+      <li><strong>Early April:</strong> Pre-war urea shipments fully depleted — physical shortage begins (CF catalyst)</li>
+      <li><strong>April:</strong> USDA Crop Progress Reports begin — fertilizer application rates vs. prior year</li>
+      <li><strong>April:</strong> China urea export quotas start — limited volumes only</li>
+      <li><strong>Ongoing:</strong> IEA 400M barrel reserve draw (~22 days coverage remaining)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 5. ESCALATION TRACKER -->
+<h2>5. ESCALATION TRACKER</h2>
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Escalation Level</th>
+        <th>Status</th>
+        <th>Change vs. Yesterday</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Hormuz Closed</td>
+        <td class="esc-active">ACTIVE — Day 16</td>
+        <td>Selective passage for India/Pakistan/Turkey only. Iran says "closed to enemies." Zero AIS crossings for Western-flagged vessels.</td>
+      </tr>
+      <tr>
+        <td>Houthi "Hour Zero" / Bab al-Mandab</td>
+        <td class="esc-imminent">IMMINENT</td>
+        <td>No change. Declared March 14. Major shipping lines paused Trans-Suez sailings. Goldman warns $120 oil if activated.</td>
+      </tr>
+      <tr>
+        <td>China Fertilizer Export Tightening</td>
+        <td class="esc-active" style="color: var(--red);">NEW — ACTIVE</td>
+        <td style="color: var(--red); font-weight: 600;">Bloomberg March 16: China halts nitrogen-potassium blend exports, reiterates urea restrictions. Phosphate suspended through August 2026.</td>
+      </tr>
+      <tr>
+        <td>Desalination Plants Under Attack</td>
+        <td class="esc-imminent">ISOLATED INCIDENTS</td>
+        <td>Bahrain + Iran (Qeshm Island) confirmed hit. Near-miss at Dubai Jebel Ali. No systematic targeting campaign yet.</td>
+      </tr>
+      <tr>
+        <td>US Navy Convoy Operations</td>
+        <td class="esc-pending">ANNOUNCED — NO TAKERS</td>
+        <td>Trump calling on allies. Australia and Japan ruled out sending warships. Timeline: "late March" at earliest.</td>
+      </tr>
+      <tr>
+        <td>IEA Reserve Release</td>
+        <td class="esc-active">ACTIVE — 400M bbl</td>
+        <td>Day 4 of release. Asian nations releasing emergency supplies. Market pricing as insufficient vs. 15 mb/d supply gap.</td>
+      </tr>
+      <tr>
+        <td>Ceasefire Negotiations</td>
+        <td class="esc-pending">NO PROGRESS</td>
+        <td>Trump: "terms aren't good enough." Iran: "never asked for ceasefire." Pope Leo urged ceasefire. Trump aide says war will end in "weeks."</td>
+      </tr>
+      <tr>
+        <td>Qatar Helium / Semiconductor Supply</td>
+        <td class="esc-imminent">CRITICAL THRESHOLD</td>
+        <td style="color: var(--orange); font-weight: 600;">Day 14 of Ras Laffan outage. 2-week fab buffer now exhausted. Some facilities scrambling. Helium prices +50-75% projected.</td>
+      </tr>
+      <tr>
+        <td>China-Taiwan Escalation</td>
+        <td class="esc-pending">BACKGROUND RISK</td>
+        <td>No new PLA exercises reported near Taiwan since Justice Mission 2025 (Dec 29-30). US overextended in Gulf. Strategic window exists but no active signal. China fertilizer hoarding suggests internal priority shift.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 6. RISK MATRIX -->
+<h2>6. RISK MATRIX — WHAT CAN BREAK THE TRADES?</h2>
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Risk</th>
+        <th>Probability</th>
+        <th>Monitoring</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Fast Ceasefire</td>
+        <td class="risk-low">LOW — Both sides explicitly reject talks</td>
+        <td>Trump statements, Iran FM, diplomatic back-channels</td>
+      </tr>
+      <tr>
+        <td>Successful Navy Escorts (Hormuz reopening)</td>
+        <td class="risk-low">LOW — Key allies (AU, JP) refusing to send ships</td>
+        <td>Pentagon briefings, tanker transit counts, coalition announcements</td>
+      </tr>
+      <tr>
+        <td>Houthi Escalation (Bab al-Mandab closure)</td>
+        <td class="risk-high">HIGH — "Hour Zero" declared, shipping lines already re-routing</td>
+        <td>UKMTO, Al Jazeera Yemen, shipping alerts, Maersk/Hapag-Lloyd updates</td>
+      </tr>
+      <tr>
+        <td>Large-Scale Desalination Attack</td>
+        <td class="risk-med">MEDIUM — Precedent set in Bahrain and Iran</td>
+        <td>Gulf state media, military reports</td>
+      </tr>
+      <tr>
+        <td>Semiconductor Supply Disruption</td>
+        <td class="risk-med">MEDIUM-HIGH — Helium buffer exhausted Day 14</td>
+        <td>QatarEnergy updates, SK Hynix/Samsung/TSMC guidance, SOXX</td>
+      </tr>
+      <tr>
+        <td>Global Liquidity Crunch</td>
+        <td class="risk-med">MEDIUM — Oil >$100 for sustained period, GDP risk -0.3% (Goldman)</td>
+        <td>Credit spreads, TED spread, funding markets, Fed emergency language</td>
+      </tr>
+      <tr>
+        <td>US Gov Intervention (DPA/Export Ban on Fertilizer)</td>
+        <td class="risk-low">LOW — No legislative activity detected</td>
+        <td>Senate Ag Committee, USDA statements, White House EOs</td>
+      </tr>
+      <tr>
+        <td>China-Taiwan Escalation</td>
+        <td class="risk-low">LOW — But structurally elevated by US overextension</td>
+        <td>PLA exercises, China export policy, US carrier deployments, TSMC, Malacca</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- HISTORICAL PRICE DATA -->
+<h2>HISTORICAL PRICE DATA</h2>
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+    <h3 style="margin: 0;">Daily Closing Prices — All Tracked Assets</h3>
+    <button class="csv-btn" onclick="downloadCSV()">Download CSV</button>
+  </div>
+  <div class="history-table" id="historyTable"></div>
+  <div class="source" style="margin-top: 8px;">Sources: Investing.com, TradingEconomics, CNBC, Baltic Exchange, CoinGlass, Yahoo Finance, EIA, Argus Media. Pre-war data at weekly granularity; war period at daily granularity.</div>
+</div>
+
+<!-- 7. BOTTOM LINE -->
+<h2>7. BOTTOM LINE</h2>
+<div class="card" style="border-color: var(--red);">
+  <p><strong style="color: var(--red);">Most Urgent:</strong> Two converging catalysts today: (1) Houthi "Hour Zero" activation expected within hours to days — if Bab al-Mandab closes, dual-chokepoint scenario triggers Stage 3. Brent targets $120-140+. (2) China fertilizer export tightening (Bloomberg today) removes the only global swing producer. These together create the most bullish setup for Strategies A and B since the war began.</p>
+
+  <p style="margin-top: 12px;"><strong style="color: var(--blue);">BTC:</strong> $70.6k — higher lows tightening ($64.2k → $68.5k → $69.3k → $70.6k). ETF inflow streak at 5 days ($763M). Watch $74k breakout. Goldman noting BTC as stimulus beneficiary. Decoupling from equities is bullish.</p>
+
+  <p style="margin-top: 12px;"><strong style="color: var(--yellow);">Conviction Changes vs. Yesterday:</strong></p>
+  <ul>
+    <li><strong>Strategy A (Fertilizer):</strong> HIGHER. China export ban reinforced (new catalyst). Urea NOLA at $645 and climbing. Physical shortage early April. CF margin widening as gas stays low.</li>
+    <li><strong>Strategy B (Tanker):</strong> STABLE AT HIGH. VLCC rates consolidating ($326k from $424k peak) — healthy, not reversal. Insurance/rerouting structural. Houthi = second leg up.</li>
+    <li><strong>Strategy D (Helium):</strong> ELEVATED. Two-week buffer exhausted. Next 7 days are critical — if QatarEnergy doesn't restart, chip supply chain disruption begins. Status upgraded from NEUTRAL to ELEVATED.</li>
+    <li><strong>Strategy E (BTC):</strong> STABLE-BULLISH. Higher lows, ETF flows positive, decoupling from equities. Missing only the $74k breakout confirmation.</li>
+    <li><strong>Strategy C (Gold):</strong> CLOSER TO ENTRY. DXY showing early peak signal (Monday pullback). Fed this week. If DXY breaks below 99 = entry trigger.</li>
+  </ul>
+
+  <p style="margin-top: 12px;"><strong style="color: var(--green);">Next Critical Dates:</strong> Houthi activation (imminent), Fed decision (this week), helium 4-week mark (~March 28), pre-war urea pipeline depletes (early April), USDA Crop Progress starts (April).</p>
+</div>
+
+<div class="footer">
+  Iran War Supply Shock — Asymmetric Trading Playbook · Daily Signal Report · Generated March 16, 2026<br>
+  This is not financial advice. All trades carry risk. Sources cited throughout.
+</div>
+
+<script>
+// FULL HISTORICAL DATASET — 6 months (weekly pre-war, daily post-war)
+// Appended 2026-03-16 data point to all series
+
+const DATASETS = {
+  brent: {
+    label: 'Brent Crude', prefix: '$', suffix: '', color: '#f85149', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-16'
+    ],
+    values: [
+      72.8,71.5,71.9,74.2,73.1,71.8,72.5,
+      73.6,72.1,70.8,69.5,68.2,67.8,66.5,
+      65.2,64.8,65.1,66.3,65.8,64.9,65.5,
+      68.8,67.2,66.8,
+      67.0,69.0,78.0,87.0,94.0,91.0,88.0,
+      89.0,92.0,94.0,96.0,87.0,95.0,100.5,103.14,104.37
+    ]
+  },
+  btc: {
+    label: 'Bitcoin', prefix: '$', suffix: '', color: '#58a6ff', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-16'
+    ],
+    values: [
+      98500,102300,108200,118400,126000,121500,115800,
+      110200,105600,100800,96400,93100,89500,86200,
+      82800,80100,84500,88200,85600,82100,78700,
+      74200,70500,67500,
+      64200,66100,71890,73100,71500,69800,68500,
+      69200,70100,70800,71200,69500,70200,69334,70982,70600
+    ]
+  },
+  gold: {
+    label: 'Gold XAU/USD', prefix: '$', suffix: '', color: '#d29922', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-16'
+    ],
+    values: [
+      3820,3890,3950,4050,4120,4180,4250,
+      4310,4380,4420,4470,4520,4560,4490,
+      4530,4550,4650,4780,4920,5100,5200,
+      5280,5180,5150,
+      5160,5220,5310,5400,5420,5350,5280,
+      5200,5150,5100,5080,5050,5030,5079,5019,5026
+    ]
+  },
+  vlcc: {
+    label: 'VLCC TD3C Rate', prefix: '$', suffix: 'k', color: '#3fb950', fill: true,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-16'
+    ],
+    values: [
+      52,55,58,62,60,57,54,
+      56,61,65,68,72,75,70,
+      66,63,67,72,76,80,78,
+      75,72,78,
+      80,95,218,424,410,390,385,
+      395,400,410,415,405,410,420,424,326
+    ]
+  },
+  wheat: {
+    label: 'Wheat May 26', prefix: '$', suffix: '', color: '#d29922', fill: false,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-16'
+    ],
+    values: [
+      5.72,5.68,5.55,5.42,5.38,5.45,5.51,
+      5.48,5.35,5.28,5.20,5.15,5.22,5.30,
+      5.25,5.18,5.28,5.35,5.42,5.38,5.32,
+      5.40,5.45,5.48,
+      5.48,5.55,5.72,5.85,5.95,6.02,6.10,
+      6.05,6.08,6.17,6.25,6.02,5.98,5.99,6.14,4.41
+    ]
+  },
+  dxy: {
+    label: 'DXY Dollar Index', prefix: '', suffix: '', color: '#e6edf3', fill: false,
+    dates: [
+      '2025-09-15','2025-09-22','2025-09-29','2025-10-06','2025-10-13','2025-10-20','2025-10-27',
+      '2025-11-03','2025-11-10','2025-11-17','2025-11-24','2025-12-01','2025-12-08','2025-12-15',
+      '2025-12-22','2025-12-29','2026-01-05','2026-01-12','2026-01-19','2026-01-26','2026-02-02',
+      '2026-02-09','2026-02-16','2026-02-23',
+      '2026-02-28','2026-03-01','2026-03-02','2026-03-03','2026-03-04','2026-03-05','2026-03-06',
+      '2026-03-07','2026-03-08','2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-16'
+    ],
+    values: [
+      94.2,94.5,94.8,95.1,95.5,95.8,96.0,
+      96.2,96.5,96.1,95.8,95.5,95.2,95.6,
+      95.9,96.1,96.4,96.0,95.7,96.2,96.5,
+      96.8,96.5,96.6,
+      96.8,97.2,97.8,98.3,98.7,99.1,99.3,
+      99.5,99.7,100.0,100.2,99.7,100.1,100.3,100.5,100.0
+    ]
+  }
+};
+
+const WAR_START_DATE = '2026-02-28';
+
+// CHART ENGINE
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = 'rgba(48,54,61,0.5)';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+Chart.defaults.font.size = 11;
+
+const chartInstances = {};
+let currentRange = '1m';
+
+function getDateCutoff(range) {
+  const now = new Date('2026-03-16');
+  switch(range) {
+    case '7d': return new Date('2026-03-09');
+    case '1m': return new Date('2026-02-16');
+    case '3m': return new Date('2025-12-16');
+    case '6m': return new Date('2025-09-16');
+    default: return new Date('2026-02-16');
+  }
+}
+
+function filterData(ds, range) {
+  const cutoff = getDateCutoff(range);
+  const filtered = { dates: [], values: [] };
+  for (let i = 0; i < ds.dates.length; i++) {
+    if (new Date(ds.dates[i]) >= cutoff) {
+      filtered.dates.push(ds.dates[i]);
+      filtered.values.push(ds.values[i]);
+    }
+  }
+  return filtered;
+}
+
+function formatDate(d) {
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function updatePriceHeader(key, ds, filtered) {
+  const el = document.getElementById('price' + key.charAt(0).toUpperCase() + key.slice(1));
+  const rangeEl = document.getElementById('range' + key.charAt(0).toUpperCase() + key.slice(1));
+  if (!el) return;
+  const current = filtered.values[filtered.values.length - 1];
+  const first = filtered.values[0];
+  const pct = ((current - first) / first * 100).toFixed(1);
+  const cls = pct >= 0 ? 'up' : 'down';
+  const sign = pct >= 0 ? '+' : '';
+  const fmtVal = ds.suffix === 'k'
+    ? ds.prefix + current.toLocaleString() + 'k'
+    : ds.prefix + current.toLocaleString();
+  el.innerHTML = fmtVal + ' <span class="' + cls + ' chart-change">' + sign + pct + '%</span>';
+  if (rangeEl) {
+    const hi = Math.max(...filtered.values);
+    const lo = Math.min(...filtered.values);
+    const fmtHi = ds.prefix + hi.toLocaleString() + (ds.suffix||'');
+    const fmtLo = ds.prefix + lo.toLocaleString() + (ds.suffix||'');
+    rangeEl.textContent = 'Range: ' + fmtLo + ' \u2014 ' + fmtHi + ' | ' + filtered.dates.length + ' data points';
+  }
+}
+
+function buildChart(key, ds, range) {
+  const canvasId = 'chart' + key.charAt(0).toUpperCase() + key.slice(1);
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  if (chartInstances[key]) chartInstances[key].destroy();
+
+  const filtered = filterData(ds, range);
+  updatePriceHeader(key, ds, filtered);
+
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+  gradient.addColorStop(0, ds.color + '33');
+  gradient.addColorStop(1, ds.color + '00');
+
+  const warIdx = filtered.dates.indexOf(WAR_START_DATE);
+
+  const annotations = {};
+  if (warIdx >= 0) {
+    annotations.warLine = {
+      type: 'line',
+      xMin: warIdx, xMax: warIdx,
+      borderColor: '#f8514966',
+      borderWidth: 2,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: 'WAR',
+        position: 'start',
+        backgroundColor: '#f8514933',
+        color: '#f85149',
+        font: { size: 9, weight: 'bold' },
+        padding: 3
+      }
+    };
+  }
+
+  chartInstances[key] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: filtered.dates.map(formatDate),
+      datasets: [{
+        data: filtered.values,
+        borderColor: ds.color,
+        backgroundColor: ds.fill ? gradient : 'transparent',
+        fill: ds.fill,
+        tension: 0.3,
+        pointRadius: range === '7d' ? 4 : (range === '1m' ? 2.5 : 1.5),
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        pointBackgroundColor: ds.color,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161b22',
+          borderColor: '#30363d',
+          borderWidth: 1,
+          titleColor: '#e6edf3',
+          bodyColor: '#e6edf3',
+          padding: 10,
+          displayColors: false,
+          callbacks: {
+            title: function(items) {
+              const idx = items[0].dataIndex;
+              return filtered.dates[idx];
+            },
+            label: function(item) {
+              const v = item.parsed.y;
+              return (ds.prefix||'') + v.toLocaleString() + (ds.suffix||'');
+            }
+          }
+        },
+        annotation: { annotations: annotations }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            maxTicksLimit: range === '7d' ? 7 : (range === '6m' ? 8 : 10),
+            font: { size: 10 }
+          }
+        },
+        y: {
+          grid: { color: 'rgba(48,54,61,0.3)' },
+          ticks: {
+            font: { size: 10 },
+            callback: function(v) { return (ds.prefix||'') + v.toLocaleString() + (ds.suffix||''); }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderAllCharts(range) {
+  currentRange = range;
+  Object.keys(DATASETS).forEach(key => buildChart(key, DATASETS[key], range));
+  document.querySelectorAll('.time-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.range === range);
+  });
+}
+
+document.querySelectorAll('.time-btn').forEach(btn => {
+  btn.addEventListener('click', () => renderAllCharts(btn.dataset.range));
+});
+
+renderAllCharts('1m');
+
+// HISTORICAL DATA TABLE + CSV DOWNLOAD
+function buildHistoryTable() {
+  const container = document.getElementById('historyTable');
+  const allDates = DATASETS.brent.dates.slice().reverse();
+  const keys = ['brent','btc','gold','vlcc','wheat','dxy'];
+  const headers = ['Brent ($)','BTC ($)','Gold ($)','VLCC ($k)','Wheat ($)','DXY'];
+
+  let html = '<table><thead><tr><th>Date</th>';
+  headers.forEach(h => html += '<th style="text-align:right;">' + h + '</th>');
+  html += '</tr></thead><tbody>';
+
+  allDates.forEach(date => {
+    const isWar = new Date(date) >= new Date(WAR_START_DATE);
+    const rowStyle = isWar ? ' style="background:rgba(248,81,73,0.04);"' : '';
+    html += '<tr' + rowStyle + '><td>' + date + (isWar ? ' <span class="war-marker">WAR</span>' : '') + '</td>';
+    keys.forEach(key => {
+      const ds = DATASETS[key];
+      const idx = ds.dates.indexOf(date);
+      const val = idx >= 0 ? ds.values[idx] : '\u2014';
+      const formatted = typeof val === 'number'
+        ? (key === 'wheat' || key === 'dxy' ? val.toFixed(2) : val.toLocaleString())
+        : val;
+      html += '<td style="text-align:right; font-variant-numeric: tabular-nums;">' + formatted + '</td>';
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function downloadCSV() {
+  const keys = ['brent','btc','gold','vlcc','wheat','dxy'];
+  const headers = ['Date','Brent_USD','BTC_USD','Gold_XAU_USD','VLCC_TD3C_kUSD','Wheat_May26_USD','DXY'];
+  let csv = headers.join(',') + '\n';
+
+  DATASETS.brent.dates.forEach((date, i) => {
+    const row = [date];
+    keys.forEach(key => {
+      const ds = DATASETS[key];
+      const idx = ds.dates.indexOf(date);
+      row.push(idx >= 0 ? ds.values[idx] : '');
+    });
+    csv += row.join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'iran_war_monitor_prices_2026-03-16.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+buildHistoryTable();
+</script>
+
+</body>
+</html>
